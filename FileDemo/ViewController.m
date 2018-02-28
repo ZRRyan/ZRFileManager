@@ -7,23 +7,85 @@
 //
 
 #import "ViewController.h"
+#import "ZRFileManager.h"
 
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet UILabel *pathLabel;
+@property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+
+
+/**
+ 文件夹目录
+ */
+@property (nonatomic, copy) NSString *fileDir;
+
+/**
+ 文件路径
+ */
+@property (nonatomic, copy) NSString *filePath;
 
 @end
 
 @implementation ViewController
 
+- (NSString *)fileDir {
+    if (_fileDir == nil) {
+        _fileDir = [NSString stringWithFormat:@"%@/Caches", [ZRFileManager documentPath]];
+    }
+    return _fileDir;
+}
+
+- (NSString *)filePath {
+    if (_filePath == nil) {
+        _filePath = [NSString stringWithFormat:@"%@/img.jpg", self.fileDir];
+    }
+    return _filePath;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+ 
+    [self reloadData];
 }
 
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)reloadData {
+    
+    if ([ZRFileManager isExistsAtPath: self.filePath] == NO) {
+        self.pathLabel.text = @"文件不存在";
+        self.sizeLabel.text = @"";
+        self.imageView.image = nil;
+    } else {
+        self.pathLabel.text = [NSString stringWithFormat:@"文件路径：%@", self.filePath];
+        self.sizeLabel.text = [NSString stringWithFormat:@"文件大小：%ldK", (long)[ZRFileManager fileSizeWithPath:self.filePath]];
+        [ZRFileManager asyncFileWithPath:self.filePath succ:^(NSData *data) {
+            self.imageView.image = [UIImage imageWithData:data];
+        } fail:^{
+            
+        }];
+    }
+    
 }
 
+- (IBAction)addBtnClick:(id)sender {
+ 
+    
+    NSData *data = UIImagePNGRepresentation([UIImage imageNamed:@"img.png"]);
+    [ZRFileManager saveFileWithDirPath: self.fileDir fileName: @"img.jpg" data:data succ:^{
+        [self reloadData];
+    } fail:^{
+
+    }];
+    
+}
+
+- (IBAction)cleanCacheBtnClick:(id)sender {
+    [ZRFileManager deleteFileWithPath:self.fileDir succ:^{
+        [self reloadData];
+    } fail:^{
+        
+    }];
+}
 
 @end

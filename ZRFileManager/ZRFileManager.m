@@ -33,14 +33,33 @@
 }
 
 /**
- 保存文件
+ 创建一个文件夹
+
+ @param path 文件夹路径
+ @param succ 成功
+ @param fail 失败
+ */
++ (void)createFileDirWithPath: (NSString *)path succ: (void(^)(void))succ fail: (void(^)(void))fail {
+    if ([self isExistsAtPath:path]) {
+        succ();
+    } else {
+        if ([[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil]) {
+            succ();
+        } else {
+            fail();
+        }
+    }
+}
+
+/**
+ 保存文件（要确保文件夹路径是存在的）
 
  @param path 文件路径
  @param data 文件内容
  @param succ 成功
  @param fail 失败
  */
-+ (void)saveFileWithPath: (NSString *)path data: (NSData *)data succ: (void(^)(void))succ fail: (void(^)(void))fail {
++ (void)saveFileWithPath: (NSString *)path  data: (NSData *)data succ: (void(^)(void))succ fail: (void(^)(void))fail {
     NSFileManager *manager = [NSFileManager defaultManager];
     BOOL isDirectory = NO;
     if ([manager fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory == NO) { // 文件存在
@@ -60,6 +79,33 @@
         } else {
             fail();
         }
+    }
+}
+
+
+
+/**
+ 保存文件
+
+ @param dirPath 文件夹目录
+ @param fileName 文件名称
+ @param data 文件内容
+ @param succ 成功
+ @param fail 失败
+ */
++ (void)saveFileWithDirPath: (NSString *)dirPath fileName: (NSString *)fileName data: (NSData *)data succ: (void(^)(void))succ fail: (void(^)(void))fail {
+    
+    NSString *path = [NSString stringWithFormat:@"%@/%@", dirPath, fileName];
+    
+    NSFileManager *manager = [NSFileManager defaultManager];
+    
+    BOOL isDirectory = NO;
+    if ([manager fileExistsAtPath:dirPath isDirectory: &isDirectory] && isDirectory == NO) { // 文件存在
+        [self saveFileWithPath:path data:data succ:succ fail:fail];
+    } else {
+        [self createFileDirWithPath:dirPath succ:^{
+            [self saveFileWithPath:path data:data succ:succ fail:fail];
+        } fail:fail];
     }
 }
 
@@ -89,13 +135,13 @@
 
 
 /**
- 清空缓存文件
+ 删除文件
  
  @param path 文件路径
  @param succ 成功
  @param fail 失败
  */
-+ (void)cleanCacheWithPath: (NSString *)path succ: (void(^)(void))succ fail: (void(^)(void))fail {
++ (void)deleteFileWithPath: (NSString *)path succ: (void(^)(void))succ fail: (void(^)(void))fail {
     NSError *error = nil;
     if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error] && error == nil) {
         succ();
@@ -103,6 +149,7 @@
         fail();
     }
 }
+
 
 
 /**
@@ -122,4 +169,5 @@
     }
     return size;
 }
+
 @end
