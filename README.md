@@ -1,14 +1,14 @@
 # ZRFileManager
 
 ## 相关API
-沙盒路径
+### 沙盒路径
 
  	/**
  	沙盒路径(NSDocumentDirectory)
 	 */
 	+ (NSString *)documentPath;
 
-判断文件是否存在
+### 判断文件是否存在
 
 	/**
 	 判断文件是否存在
@@ -18,7 +18,7 @@
  	*/
 	+ (BOOL)isExistsAtPath: (NSString *)path;
 
-创建一个文件夹
+### 创建一个文件夹
 
 	/**
 	 创建一个文件夹
@@ -29,7 +29,7 @@
 	 */
 	+ (void)createFileDirWithPath: (NSString *)path succ: (void(^)(void))succ fail: (void(^)(void))fail;
 
-保存文件
+### 保存文件
 
 	/**
 	 保存文件（要确保文件夹路径是存在的）
@@ -53,7 +53,7 @@
 	 */
 	+ (void)saveFileWithDirPath: (NSString *)dirPath fileName: (NSString *)fileName data: (NSData *)data succ: (void(^)(void))succ fail: (void(^)(void))fail;
 
-获取文件
+### 获取文件
 
 	/**
 	 获取文件
@@ -64,7 +64,7 @@
 	 */
 	+ (void)asyncFileWithPath: (NSString *)path succ: (void(^)(NSData *data))succ fail: (void(^)(void))fail;
 
-删除文件
+### 删除文件
 
 	/**
 	 删除文件
@@ -75,7 +75,7 @@
 	 */
 	+ (void)deleteFileWithPath: (NSString *)path succ: (void(^)(void))succ fail: (void(^)(void))fail;
 
-获取文件大小
+### 获取文件大小
 
 	/**
 	 获取某个路径下的文件大小（单位：kb）
